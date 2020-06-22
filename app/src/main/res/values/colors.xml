@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0a091b</color>
+    <color name="colorPrimaryDark">#070716</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorTransparent">#00000000</color>
+
+
+    <color name="tpColorBlack">#77000000</color>
+    <color name="colorTPWhite">#DDFFFFFF</color>
+
+    <color name="colorAsh">#aaa</color>
+    <color name="colorGrey">#ccc</color>
+    <color name="activityBG">#f2f2f2</color>
+    <color name="colorEEE">#eee</color>
+    <color name="colorLiteBlue">#f7f8fa</color>
+    <color name="colorHover">#f2f3fa</color>
+
+    <color name="headingColor">#222</color>
+    <color name="fontColor">#444</color>
+    <color name="fontLiteColor">#666</color>
+    <color name="fontSemiWhiteColor">#aaa</color>
+
+
+    <color name="colorFacebook">#3a539b</color>
+    <color name="colorFacebookHover">#293e6a</color>
+    <color name="colorGoogle">#d54b3d</color>
+    <color name="colorGoogleHover">#95342a</color>
+
+    <color name="editTextActive">#fafcff</color>
+
+    <!--PRODUCT DIALOG COLOR-->
+    <color name="color_dialog_white">#FFFFFF</color>
+    <color name="color_dialog_ash">#AAAAAA</color>
+    <color name="color_dialog_black">#000000</color>
+    <color name="color_dialog_blue">#007fff</color>
+    <color name="color_dialog_pink">#e4007c</color>
+    <color name="color_dialog_yellow">#ffd300</color>
+    <color name="rippleEffectColor">#F816A463</color>
+    <color name="btnSignIn">#1FBAD6</color>
+    <color name="btnRegister">#83838C</color>
+
+</resources>
