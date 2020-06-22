@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "179819158392",
+    "firebase_url": "https://help-327f9.firebaseio.com",
+    "project_id": "help-327f9",
+    "storage_bucket": "help-327f9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179819158392:android:141d236d34770ea1b9068d",
+        "android_client_info": {
+          "package_name": "com.axel.help"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "179819158392-s69tj9jiltf36m79mafp0h4vv87574u7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.axel.help",
+            "certificate_hash": "e1a1e8ec32f1cfa7929ac8bdfdf51bc75ad391ef"
+          }
+        },
+        {
+          "client_id": "179819158392-smu5l0pk2i65i8eqqka3esfpdcq0ljok.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSbItgAPuw6S7aDR7baV1MsQNQz1jcgC8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "179819158392-smu5l0pk2i65i8eqqka3esfpdcq0ljok.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
