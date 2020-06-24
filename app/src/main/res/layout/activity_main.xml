@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/rootlayout"
-    android:background="@drawable/background_color"
+    android:background="@drawable/ic_background"
     tools:context=".controllers.MainActivity">
 
     <LinearLayout
@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textSize="36dp"
+            android:textSize="90dp"
             android:text="H E L P"
             android:textStyle="bold"
             android:textColor="@android:color/white" />
@@ -68,7 +68,8 @@
             android:layout_marginRight="5dp"
             android:text="Se connecter"
             android:background="@drawable/btn_sign_in_background"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
 
         <Button
             android:id="@+id/btn_register"
@@ -78,7 +79,8 @@
             android:layout_marginLeft="5dp"
             android:text="S'inscrire"
             android:background="@drawable/btn_register_background"
-            android:textColor="@color/btnRegister" />
+            android:textColor="@android:color/black"
+            android:textStyle="bold"/>
 
     </LinearLayout>
 
