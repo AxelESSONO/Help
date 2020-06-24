@@ -40,4 +40,8 @@
     <color name="btnSignIn">#1FBAD6</color>
     <color name="btnRegister">#83838C</color>
 
+    <color name="base_release_color">#212121</color>
+    <color name="base_press_color">#FAFAFA</color>
+    <color name="ball_release_color">#9E9E9E</color>
+
 </resources>

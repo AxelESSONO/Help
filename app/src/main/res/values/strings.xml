@@ -99,6 +99,7 @@
     <string name="edit_address">Edit Address</string>
     <string name="save_address">Save Address</string>
     <string name="my_personal_info">Mes informations personnelles</string>
+    <string name="title_activity_welcome">Map</string>
 
 
 </resources>

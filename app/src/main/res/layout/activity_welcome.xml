@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/map"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".controllers.WelcomeActivity">
+
+    <RelativeLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:cardElevation="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:weightSum="10"
+                android:layout_margin="5dp">
+
+                <com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch
+                    android:id="@+id/location_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    app:icon_release="@drawable/ic_location_off"
+                    app:icon_press="@drawable/ic_location_on"
+                    app:base_release_color="@color/base_release_color"
+                    app:base_press_color="@color/base_press_color"
+                    app:ball_release_color="@color/ball_release_color"
+                    app:ball_press_color="@android:color/white"/>
+
+                <Button
+                    android:id="@+id/btn_find_user"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="7"
+                    android:layout_marginLeft="5dp"
+                    android:text="Trouver un helper"
+                    android:background="@drawable/btn_sign_in_background"
+                    android:textColor="@android:color/white" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+
+</fragment>
