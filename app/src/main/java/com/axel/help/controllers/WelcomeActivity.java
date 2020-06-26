@@ -9,18 +9,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
-
 import com.axel.help.R;
 import com.axel.help.common.Common;
 import com.axel.help.remote.IGoogleAPI;
@@ -30,6 +26,7 @@ import com.github.glomadrian.materialanimatedswitch.MaterialAnimatedSwitch;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -48,18 +45,24 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.SquareCap;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -96,9 +99,7 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
     private Handler handler;
     private LatLng startPosition, endPosition, currentPosition;
     private int index, next;
-    private Button btnGo;
-    private EditText edtPlace;
-    private String destination;
+    private String destination = null;
     private PolylineOptions polylineOptions, blackPolyLineOptions;
     private Polyline blackPolyline, greyPolyline;
 
@@ -171,6 +172,48 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
 
         // init my view
         location_switch = (MaterialAnimatedSwitch) findViewById(R.id.location_switch);
+
+        /** Auto complete textview begin **/
+
+       /* if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getResources().getString(R.string.google_api_key), Locale.FRANCE);
+        }*/
+
+        Places.initialize(getApplicationContext(), getResources().getString(R.string.google_api_key));
+
+        // Initialize the AutocompleteSupportFragment.
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+
+                if (location_switch.isChecked()){
+
+                    destination = place.getName();
+                    destination = destination.replace(" ", "+");
+                    getDirection();
+
+                } else {
+                    Toast.makeText(WelcomeActivity.this, "Veuillez changer votre statut en: En ligne.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(Status status) {
+                Toast.makeText(WelcomeActivity.this, ""+status.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+        /** Auto complete textview end**/
+
+
         location_switch.setOnCheckedChangeListener(new MaterialAnimatedSwitch.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(boolean isOnLine) {
@@ -189,17 +232,6 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
         });
 
         polyLineList = new ArrayList<>();
-        btnGo = (Button) findViewById(R.id.btnGo);
-        edtPlace = (EditText) findViewById(R.id.edtPlace);
-        btnGo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                destination = edtPlace.getText().toString();
-                destination = destination.replace(" ", "+");
-                Log.d("HELP APP", destination);
-                getDirection();
-            }
-        });
 
         helper = FirebaseDatabase.getInstance().getReference("Helpers");
         geoFire = new GeoFire(helper);
@@ -230,48 +262,24 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
                             try {
 
                                 JSONObject jsonObject = new JSONObject(response.body());   // toString
-                                //JSONArray jsonArray = jsonObject.getJSONArray("routes");
-                           /*     for (int i = 0; i < jsonArray.length(); i++) {
-                                    JSONObject route = jsonArray.getJSONObject(i);
-
-                                    JSONObject poly = route.getJSONObject("overview_polyline");
-                                    String polyline = poly.getString("points");
-                                    polyLineList = decodePoly(polyline);
-                                }*/
-
-
                                 JSONArray jsonArray = jsonObject.getJSONArray("routes");
                                 JSONObject route = jsonArray.getJSONObject(0);
-
                                 JSONObject poly = route.getJSONObject("overview_polyline");
                                 String polyline = poly.getString("points");
                                 polyLineList = decodePoly(polyline);
 
 
                                 // Adjust bounds
-
-
-                             /*   LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                for (LatLng latLng : polyLineList) {
-                                    builder.include(latLng);
-                                }
-                                LatLngBounds bounds = builder.build();
-                                CameraUpdate mCameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 2);
-                                mMap.animateCamera(mCameraUpdate);*/
-
-
                                 if (!polyLineList.isEmpty()) {
                                     // Adjusting Bounds
                                     LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                    for (LatLng latLng:polyLineList) {
+                                    for (LatLng latLng : polyLineList) {
                                         builder = builder.include(latLng);
                                     }
                                     LatLngBounds bounds = builder.build();
                                     CameraUpdate mCameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 2);
                                     mMap.animateCamera(mCameraUpdate);
                                 }
-
-
 
                                 polylineOptions = new PolylineOptions();
                                 polylineOptions.color(Color.GRAY);
@@ -292,7 +300,7 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
                                 blackPolyline = mMap.addPolyline(blackPolyLineOptions);
 
                                 mMap.addMarker(new MarkerOptions()
-                                        .position(polyLineList.get(polyLineList.size()-1))
+                                        .position(polyLineList.get(polyLineList.size() - 1))
                                         .title("Lieu d'intervention"));
 
                                 // Animation
