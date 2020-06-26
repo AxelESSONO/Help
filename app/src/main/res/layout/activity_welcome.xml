@@ -39,7 +39,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".controllers.WelcomeActivity" />
+        tools:context=".controllers.WelcomeActivity"/>
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
@@ -104,32 +105,32 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
     Runnable drawPathRunnable = new Runnable() {
         @Override
         public void run() {
-            if (index < polyLineList.size()-1){
+            if (index < polyLineList.size() - 1) {
                 index++;
                 next = index + 1;
             }
-            if (index < polyLineList.size()-1){
+            if (index < polyLineList.size() - 1) {
                 startPosition = polyLineList.get(index);
                 endPosition = polyLineList.get(next);
             }
-            final ValueAnimator valueAnimator = ValueAnimator.ofFloat(0,1);
+            final ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1);
             valueAnimator.setDuration(3000);
             valueAnimator.setInterpolator(new LinearInterpolator());
             valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     v = valueAnimator.getAnimatedFraction();
-                    lng = v*endPosition.longitude+ (1-v)*startPosition.longitude;
-                    lat = v*endPosition.latitude+ (1-v)*startPosition.latitude;
+                    lng = v * endPosition.longitude + (1 - v) * startPosition.longitude;
+                    lat = v * endPosition.latitude + (1 - v) * startPosition.latitude;
                     LatLng newPos = new LatLng(lat, lng);
                     helperMarker.setPosition(newPos);
                     helperMarker.setAnchor(0.5f, 0.5f);
                     helperMarker.setRotation(getBearing(startPosition, newPos));
                     mMap.moveCamera(CameraUpdateFactory.newCameraPosition(
                             new CameraPosition.Builder()
-                            .target(newPos)
-                            .zoom(15.5f)
-                            .build()
+                                    .target(newPos)
+                                    .zoom(15.5f)
+                                    .build()
                     ));
                 }
             });
@@ -143,16 +144,16 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
         double lng = Math.abs(startPosition.longitude - endPosition.longitude);
 
         if (startPosition.latitude < endPosition.latitude && startPosition.longitude < endPosition.longitude)
-            return  (float) (Math.toDegrees(Math.atan(lng/lat)));
+            return (float) (Math.toDegrees(Math.atan(lng / lat)));
 
-        else  if (startPosition.latitude >= endPosition.latitude && startPosition.longitude < endPosition.longitude)
-            return (float) ((90 - Math.toDegrees(Math.atan(lng/lat)))+90);
+        else if (startPosition.latitude >= endPosition.latitude && startPosition.longitude < endPosition.longitude)
+            return (float) ((90 - Math.toDegrees(Math.atan(lng / lat))) + 90);
 
-        else  if (startPosition.latitude >= endPosition.latitude && startPosition.longitude >= endPosition.longitude)
-            return  (float) (Math.toDegrees(Math.atan(lng/lat)) + 180);
+        else if (startPosition.latitude >= endPosition.latitude && startPosition.longitude >= endPosition.longitude)
+            return (float) (Math.toDegrees(Math.atan(lng / lat)) + 180);
 
-        else  if (startPosition.latitude < endPosition.latitude && startPosition.longitude >= endPosition.longitude)
-            return  (float) ((90 - Math.toDegrees(Math.atan(lng/lat)))+270);
+        else if (startPosition.latitude < endPosition.latitude && startPosition.longitude >= endPosition.longitude)
+            return (float) ((90 - Math.toDegrees(Math.atan(lng / lat))) + 270);
 
         return -1;
 
@@ -161,8 +162,7 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
     private IGoogleAPI mService;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -196,6 +196,7 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
             public void onClick(View v) {
                 destination = edtPlace.getText().toString();
                 destination = destination.replace(" ", "+");
+                Log.d("HELP APP", destination);
                 getDirection();
             }
         });
@@ -212,35 +213,65 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
         String requestApi = null;
         try {
 
-            http://maps.googleapis.com/maps/api/directions/json
-
+            http:
             requestApi = "https://maps.googleapis.com/maps/api/directions/json?" +
                     "mode=driving&" +
                     "transit_routing_preference=less_driving&" +
                     "origin=" + currentPosition.latitude + "," + currentPosition.longitude + "&" +
                     "destination=" + destination + "&" +
                     "key=" + getResources().getString(R.string.google_direction_api);
+
+            Log.d("HELP APP", requestApi); // URL for debug
+
             mService.getPath(requestApi)
                     .enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
                             try {
-                                JSONObject jsonObject = new JSONObject(response.body().toString());
-                                JSONArray jsonArray = jsonObject.getJSONArray("routes");
-                                for (int i = 0; i < jsonArray.length(); i++) {
+
+                                JSONObject jsonObject = new JSONObject(response.body());   // toString
+                                //JSONArray jsonArray = jsonObject.getJSONArray("routes");
+                           /*     for (int i = 0; i < jsonArray.length(); i++) {
                                     JSONObject route = jsonArray.getJSONObject(i);
+
                                     JSONObject poly = route.getJSONObject("overview_polyline");
                                     String polyline = poly.getString("points");
                                     polyLineList = decodePoly(polyline);
-                                }
+                                }*/
+
+
+                                JSONArray jsonArray = jsonObject.getJSONArray("routes");
+                                JSONObject route = jsonArray.getJSONObject(0);
+
+                                JSONObject poly = route.getJSONObject("overview_polyline");
+                                String polyline = poly.getString("points");
+                                polyLineList = decodePoly(polyline);
+
+
                                 // Adjust bounds
-                                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                                for (LatLng latLng : polyLineList){
+
+
+                             /*   LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                for (LatLng latLng : polyLineList) {
                                     builder.include(latLng);
                                 }
                                 LatLngBounds bounds = builder.build();
                                 CameraUpdate mCameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 2);
-                                mMap.animateCamera(mCameraUpdate);
+                                mMap.animateCamera(mCameraUpdate);*/
+
+
+                                if (!polyLineList.isEmpty()) {
+                                    // Adjusting Bounds
+                                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                                    for (LatLng latLng:polyLineList) {
+                                        builder = builder.include(latLng);
+                                    }
+                                    LatLngBounds bounds = builder.build();
+                                    CameraUpdate mCameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 2);
+                                    mMap.animateCamera(mCameraUpdate);
+                                }
+
+
 
                                 polylineOptions = new PolylineOptions();
                                 polylineOptions.color(Color.GRAY);
@@ -261,8 +292,8 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
                                 blackPolyline = mMap.addPolyline(blackPolyLineOptions);
 
                                 mMap.addMarker(new MarkerOptions()
-                                                .position(polyLineList.get(polyLineList.size()-1))
-                                                .title("Lieu d'intervention"));
+                                        .position(polyLineList.get(polyLineList.size()-1))
+                                        .title("Lieu d'intervention"));
 
                                 // Animation
                                 ValueAnimator polylineAnimator = ValueAnimator.ofInt(0, 100);
@@ -274,7 +305,7 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
                                         List<LatLng> points = greyPolyline.getPoints();
                                         int percentValue = (int) valueAnimator.getAnimatedValue();
                                         int size = points.size();
-                                        int newPoints = (int) (size * (percentValue/100.0f));
+                                        int newPoints = (int) (size * (percentValue / 100.0f));
                                         List<LatLng> p = points.subList(0, newPoints);
                                         blackPolyline.setPoints(p);
                                     }
@@ -282,8 +313,8 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
 
                                 polylineAnimator.start();
                                 helperMarker = mMap.addMarker(new MarkerOptions().position(currentPosition)
-                                          .flat(true)
-                                          .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user)));
+                                        .flat(true)
+                                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user)));
 
                                 handler = new Handler();
                                 index = -1;
@@ -333,7 +364,7 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
             int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
             lng += dlng;
 
-            LatLng p = new LatLng((((double) lat / 1E5)),  (((double) lng / 1E5)));
+            LatLng p = new LatLng((((double) lat / 1E5)), (((double) lng / 1E5)));
             poly.add(p);
         }
         return poly;
@@ -439,9 +470,10 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
                             mCurrent.remove(); // Remove already marker
                         }
                         mCurrent = mMap.addMarker(new MarkerOptions()
-                                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user))
                                 .position(new LatLng(latitude, longitude))
-                                .title("Vous"));
+                                .title("Votre position"));
+
+                        //.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_user))
 
                         // Move Camera to this position
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 15.0f));
@@ -451,7 +483,7 @@ public class WelcomeActivity extends FragmentActivity implements OnMapReadyCallb
                     }
                 });
             } else {
-                Toast.makeText(this, "Impossible d'obtenir votre position", Toast.LENGTH_SHORT).show();
+                Log.d("ERROR", "Cannot get your location");
             }
         }
     }
